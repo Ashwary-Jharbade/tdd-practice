@@ -1,5 +1,12 @@
 class RoverUtil {
+	// Regular expression for command validation check
 	_commandRegex = /^(N|F|B|R|L)\|(-?\d{1,}(.\d{1,})?,){2}(E|W|N|S)$/;
+	/**
+	 * @method - Method to convert rover commands into structured data
+	 * @param1 - coor parameter of type string represents current coordinates of rover
+	 * @param2 - commandCoor parameter of type string represents input/destination coordinate of rover 
+	 * @return - Method returns a strtuctred object for data accessibility 
+	 * */
 	_getformattedCommand(coor, commandCoor) {
 		const currentCoor = coor.split("|")[1].split(",");
 		const inputCoor = commandCoor.split("|")[1].split(",");
@@ -9,6 +16,11 @@ class RoverUtil {
 		}
 		return data;
 	}
+	/**
+	 * @method - Method to check rover command list
+	 * @param1 - commandList parameter of type Array of strings represents list of coordinates needed to move rover
+	 * @return - Method returns a boolean value as a response of data provided 
+	 * */
 	_isValidRoverCommandList(commandList) {
 		const len = commandList.length;
 		for (let i = 0; i < len; i++) {
@@ -18,17 +30,27 @@ class RoverUtil {
 		}
 		return true;
 	}
+	/**
+	 * @method - Method to check rover command
+	 * @param1 - command parameter of type string represents rover geo coordinate
+	 * @return - Method returns a boolean value with respect to structure of command 
+	 * */
 	_isValidRoverCommand(command) {
-		return this._commandRegex.test(command);
-	}
-	_isValidRoverNavigationCommand(command) {
 		return this._commandRegex.test(command);
 	}
 }
 class Rover extends RoverUtil {
+	// Member variable to represents current geo coordinate of rover
 	#coors;
+	// Member variable to represents list of geo coordinate to move rover
 	#commandList;
+	// Member variable to halt the movement of rover in case of bad command
 	#status;
+	/**
+	 * @method - Default parameterised constructor to intiantiate Rover class instance 
+	 * @param1 - initialPos parameter of type string represents starting rover geo coordinate
+	 * @param2 - commands parameter of type Array of strings represents list of coordinates needed to move rover
+	 * */
 	constructor(initialPos = "N|0,0,E", commands = []) {
 		super();
 		if (this._isValidRoverCommand(initialPos)) {
@@ -43,9 +65,14 @@ class Rover extends RoverUtil {
 		}
 		this.#status = true;
 	}
+	/**
+	 * @method - Method to get the current geo coordinate of rover  
+	 * @return - Method returns current geo coordinate of rover string value 
+	 * */
 	getCoors() {
 		return this.#coors;
 	}
+	// Functionality to call rover methods based on command flags
 	move() {
 		if (this._isValidRoverCommandList(this.#commandList)) {
 			const len = this.#commandList.length;
@@ -56,24 +83,29 @@ class Rover extends RoverUtil {
 				}
 				switch(command[0]) {
 					case "F":
-						this.forward(command);
+						this.#forward(command);
 						break;
 					case "B":
-						this.backward(command);
+						this.#backward(command);
 						break;
 					case "R":
-						this.right(command);
+						this.#right(command);
 						break;
 					case "L":
-						this.left(command);
+						this.#left(command);
 				}
 			}
 		} else {
 			console.log("Alert! Invalid navigation commands")
 		}
 	}
-	moveForward() {}
-	forward(command) {
+	// Method to trigger rover functionalites to move rover in forward direction
+	#moveForward() {}
+	/**
+	 * @method - Method to prompt, determine and move rover movement in forward direction 
+	 * @param1 - command parameter of type string represents input coordinates of rover
+	 * */
+	#forward(command) {
 		const { currentCoor, inputCoor } = this._getformattedCommand(this.#coors, command);
 		if (currentCoor.d === inputCoor.d) {
 			let res = false;
@@ -92,7 +124,7 @@ class Rover extends RoverUtil {
 			}
 			if (res) {
 				this.#coors = command;
-				this.moveForward();
+				this.#moveForward();
 			} else {
 				this.#status = false;
 				console.log(`Invalid forward command: ${command}`);
@@ -102,8 +134,13 @@ class Rover extends RoverUtil {
 			console.log(`Invalid forward command: ${command}`);
 		}
 	}
-	moveBackward() {}
-	backward(command) {
+	// Method to trigger rover functionalites to move rover in backward direction
+	#moveBackward() {}
+	/**
+	 * @method - Method to prompt, determine and move rover movement in backward direction 
+	 * @param1 - command parameter of type string represents input coordinates of rover
+	 * */
+	#backward(command) {
 		const { currentCoor, inputCoor } = this._getformattedCommand(this.#coors, command);
 		let res = false;
 		switch(inputCoor.d) {
@@ -121,14 +158,19 @@ class Rover extends RoverUtil {
 		}
 		if (res) {
 			this.#coors = command;
-			this.moveBackward();
+			this.#moveBackward();
 		} else {
 			this.#status = false;
 			console.log(`Invalid backward command: ${command}`);
 		}
 	}
-	moveLeft() {}
-	left(command) {
+	// Method to trigger rover functionalites to move rover in left direction
+	#moveLeft() {}
+	/**
+	 * @method - Method to prompt, determine and move rover movement in left direction 
+	 * @param1 - command parameter of type string represents input coordinates of rover
+	 * */
+	#left(command) {
 		const { currentCoor, inputCoor } = this._getformattedCommand(this.#coors, command);
 		let res = false;
 		switch(currentCoor.d) {
@@ -146,14 +188,19 @@ class Rover extends RoverUtil {
 		}
 		if (res) {
 			this.#coors = command;
-			this.moveLeft();
+			this.#moveLeft();
 		} else {
 			this.#status = false;
 			console.log(`Invalid left command: ${command}`);
 		}
 	}
-	moveRight() {}
-	right(command) {
+	// Method to trigger rover functionalites to move rover in right direction
+	#moveRight() {}
+	/**
+	 * @method - Method to prompt, determine and move rover movement in right direction 
+	 * @param1 - command parameter of type string represents input coordinates of rover
+	 * */
+	#right(command) {
 		const { currentCoor, inputCoor, outputCoor } = this._getformattedCommand(this.#coors, command);
 		let res = false;
 		switch(currentCoor.d) {
@@ -171,7 +218,7 @@ class Rover extends RoverUtil {
 		}
 		if (res) {
 			this.#coors = command;
-			this.moveRight();
+			this.#moveRight();
 		} else {
 			this.#status = false;
 			console.log(`Invalid right command: ${command}`);
@@ -180,14 +227,31 @@ class Rover extends RoverUtil {
 
 }
 try {
+	// List of commands to move rover from initial point to destination
 	const commandList = [
 		"F|1,0,E",
-		"F|3,0,W",
-		"F|3,0,E",
-		"F|4,0,E",
-		"B|2,0,E"
+		"F|2,0,E",
+		"L|2,1,N",
+		"F|2,2,N",
+		"R|4,2,E",
+		"R|2,1,E",
+		"F|2,1,E",
+		"F|-1,-2,S",
+		"F|-1,-1,S",
+		"F|-1,-1,N",
+		"F|-1,-14,W",
+		"F|-2,-12,W",
+		"F|-1,-14,W",
+		"F|0,12,N",
+		"F|10,12,N",
+		"F|-1,-12,N",
+		"F|-1,-8,N",
+		"F|-1,-12,N",
+		"F|-1,-8,N"
 	];
+	// Creating instance of Rover class with rover stating geo loaction and list of commands for navigation
 	const rov = new Rover("N|0,0,E", commandList);
+	// Calling Rover class move method to start rover movements
 	rov.move();
 } catch (error) {
 	console.log(error);
